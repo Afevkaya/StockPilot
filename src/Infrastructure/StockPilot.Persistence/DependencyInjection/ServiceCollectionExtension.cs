@@ -1,12 +1,18 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace StockPilot.Persistence.DependencyInjection;
 
 public static class ServiceCollectionExtension
 {
-    public static IServiceCollection AddPersistence(this IServiceCollection services)
+    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
-        // Register persistence services here
+        string? connectionString = configuration.GetConnectionString("PostgreSQLConnection");
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException("Connection string 'PostgreSQLConnection' not found.");
+        }
+
         return services;
     }
 }
