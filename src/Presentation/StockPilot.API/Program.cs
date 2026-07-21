@@ -7,7 +7,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services
     .AddApplication()
-    .AddPersistence();
+    .AddPersistence(builder.Configuration);
 
 WebApplication app = builder.Build();
 
