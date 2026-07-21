@@ -3,6 +3,7 @@
       <ProjectReference Include="..\..\Core\StockPilot.Application\StockPilot.Application.csproj" />
     </ItemGroup>
     <ItemGroup>
+      <PackageReference Include="Dapper" Version="2.1.79" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.10" />
       <PackageReference Include="Npgsql" Version="10.0.3" />
     </ItemGroup>
