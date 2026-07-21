@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using StockPilot.Application.Abstractions.Connections;
+using StockPilot.Persistence.Connections;
 
 namespace StockPilot.Persistence.DependencyInjection;
 
@@ -12,6 +14,8 @@ public static class ServiceCollectionExtension
         {
             throw new InvalidOperationException("Connection string 'PostgreSQLConnection' not found.");
         }
+
+        services.AddScoped<IDbConnectionFactory>(_ => new DbConnectionFactory(connectionString));
 
         return services;
     }
