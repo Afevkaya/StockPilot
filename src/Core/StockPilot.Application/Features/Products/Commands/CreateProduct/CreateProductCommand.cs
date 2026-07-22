@@ -1,4 +1,4 @@
-﻿namespace StockPilot.Application.Features.Products.CreateProduct;
+﻿namespace StockPilot.Application.Features.Products.Commands.CreateProduct;
 
 public record CreateProductCommand(
     string Name,

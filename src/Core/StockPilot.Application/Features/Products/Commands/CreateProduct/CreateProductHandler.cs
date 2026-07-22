@@ -1,7 +1,7 @@
 ﻿using StockPilot.Application.Abstractions.Persistence.Commands;
 using StockPilot.Domain.Entities;
 
-namespace StockPilot.Application.Features.Products.CreateProduct;
+namespace StockPilot.Application.Features.Products.Commands.CreateProduct;
 
 public class CreateProductHandler(IProductCommandRepository productCommandRepository)
 {
