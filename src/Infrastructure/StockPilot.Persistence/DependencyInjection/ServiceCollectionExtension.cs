@@ -2,8 +2,10 @@
 using Microsoft.Extensions.Configuration;
 using StockPilot.Application.Abstractions.Connections;
 using StockPilot.Application.Abstractions.Persistence.Commands;
+using StockPilot.Application.Abstractions.Persistence.Queries;
 using StockPilot.Persistence.Commands;
 using StockPilot.Persistence.Connections;
+using StockPilot.Persistence.Queries;
 
 namespace StockPilot.Persistence.DependencyInjection;
 
@@ -19,6 +21,7 @@ public static class ServiceCollectionExtension
 
         services.AddScoped<IDbConnectionFactory>(_ => new DbConnectionFactory(connectionString));
         services.AddScoped<IProductCommandRepository, ProductCommandRepository>();
+        services.AddScoped<IProductQueryRepository, ProductQueryRepository>();
 
         return services;
     }
