@@ -4,6 +4,11 @@ namespace StockPilot.Domain.Entities;
 
 public class Product : BaseEntity
 {
+    public Product()
+    {
+
+    }
+
     public Product(string name, string? description, decimal purchasePrice, decimal salePrice)
     {
         ValidateName(name);
@@ -17,10 +22,22 @@ public class Product : BaseEntity
         CreatedAt = DateTime.UtcNow;
     }
 
-    public string Name { get; private set; }
+    public string Name { get; private set; } = null!;
     public string? Description { get; private set; }
     public decimal PurchasePrice { get; private set; }
     public decimal SalePrice { get; private set; }
+
+    public void Update(string name, string? description, decimal purchasePrice, decimal salePrice)
+    {
+        ValidateName(name);
+        ValidatePrices(purchasePrice, salePrice);
+
+        Name = name;
+        Description = description;
+        PurchasePrice = purchasePrice;
+        SalePrice = salePrice;
+        UpdatedAt = DateTime.UtcNow;
+    }
 
     private static void ValidateName(string name)
     {
