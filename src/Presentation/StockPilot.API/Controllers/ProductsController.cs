@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using StockPilot.Application.Features.Products.Commands.CreateProduct;
 using StockPilot.Application.Features.Products.Queries.GetProductById;
 
@@ -11,10 +12,29 @@ public class ProductsController(
     GetProductByIdHandler getProductByIdHandler) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromBody] CreateProductCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateProduct(
+        [FromBody] CreateProductCommand command,
+        CancellationToken cancellationToken)
     {
-        var productResponse = await createProductHandler.HandleAsync(command, cancellationToken);
-        return Ok(productResponse);
+        try
+        {
+            var productResponse =
+                await createProductHandler.HandleAsync(command, cancellationToken);
+
+            return Ok(productResponse);
+        }
+        catch (ValidationException exception)
+        {
+            var errors = exception.Errors
+                .GroupBy(error => error.PropertyName)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group
+                        .Select(error => error.ErrorMessage)
+                        .ToArray());
+
+            return ValidationProblem(new ValidationProblemDetails(errors));
+        }
     }
 
     [HttpGet("{id:guid}")]
