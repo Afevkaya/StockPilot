@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using StockPilot.Application.Features.Products.Commands.CreateProduct;
 using StockPilot.Application.Features.Products.Queries.GetProductById;
+using StockPilot.Application.Features.Products.Queries.GetProducts;
 
 namespace StockPilot.API.Controllers;
 
@@ -9,12 +10,11 @@ namespace StockPilot.API.Controllers;
 [Route("api/products")]
 public class ProductsController(
     CreateProductHandler createProductHandler,
-    GetProductByIdHandler getProductByIdHandler) : ControllerBase
+    GetProductByIdHandler getProductByIdHandler,
+    GetProductsHandler getProductsHandler) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> CreateProduct(
-        [FromBody] CreateProductCommand command,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductCommand command, CancellationToken cancellationToken)
     {
         try
         {
@@ -46,5 +46,12 @@ public class ProductsController(
             return NotFound();
         }
         return Ok(product);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllProducts(CancellationToken cancellationToken)
+    {
+        var products = await getProductsHandler.HandleAsync(cancellationToken);
+        return Ok(products);
     }
 }
