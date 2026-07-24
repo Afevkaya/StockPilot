@@ -55,10 +55,25 @@ public class ProductsController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllProducts(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllProducts([FromQuery] GetProductsQuery query, CancellationToken cancellationToken)
     {
-        var products = await getProductsHandler.HandleAsync(cancellationToken);
-        return Ok(products);
+        try
+        {
+            var data = await getProductsHandler.HandleAsync(query, cancellationToken);
+            return Ok(data);
+        }
+        catch (ValidationException exception)
+        {
+            var errors = exception.Errors
+                .GroupBy(error => error.PropertyName)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group
+                        .Select(error => error.ErrorMessage)
+                        .ToArray());
+
+            return ValidationProblem(new ValidationProblemDetails(errors));
+        }
     }
 
     [HttpPut("{id:guid}")]
