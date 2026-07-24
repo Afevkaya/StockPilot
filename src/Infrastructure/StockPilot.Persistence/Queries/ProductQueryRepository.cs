@@ -20,29 +20,62 @@ public class ProductQueryRepository(IDbConnectionFactory dbConnectionFactory) : 
         return await connection.QuerySingleOrDefaultAsync<GetProductByIdResponse>(command);
     }
 
-    public async Task<GetProductsResponse> GetAllAsync(int page = 1, int pageSize = 10,
+    public async Task<GetProductsResponse> GetAllAsync(GetProductsQuery productsQuery,
         CancellationToken cancellationToken = default)
     {
+        List<string> conditions = [];
+        DynamicParameters parameters = new();
+
+        parameters.Add("Offset", (productsQuery.Page - 1) * productsQuery.PageSize);
+        parameters.Add("PageSize", productsQuery.PageSize);
+
+        if (!string.IsNullOrWhiteSpace(productsQuery.Name))
+        {
+            conditions.Add("name = @Name");
+            parameters.Add("Name", productsQuery.Name.Trim());
+        }
+        if (productsQuery.MinSalePrice is not null)
+        {
+            conditions.Add("sale_price >= @MinSalePrice");
+            parameters.Add("MinSalePrice", productsQuery.MinSalePrice.Value);
+        }
+        if (productsQuery.MaxSalePrice is not null)
+        {
+            conditions.Add("sale_price <= @MaxSalePrice");
+            parameters.Add("MaxSalePrice", productsQuery.MaxSalePrice.Value);
+        }
+
+        string whereClause = conditions.Count > 0 ? "WHERE " + string.Join(" AND ", conditions) : string.Empty;
+
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
-        string query = @"SELECT
-                            id as Id, name as Name,
-                            purchase_price as PurchasePrice, sale_price as SalePrice
-                        FROM products
-                        ORDER BY created_date desc, id desc
-                        OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-                        SELECT COUNT(*) FROM products;";
+        string query = $"""
+            SELECT
+                id AS Id,
+                name AS Name,
+                purchase_price AS PurchasePrice,
+                sale_price AS SalePrice
+            FROM products
+            {whereClause}
+            ORDER BY created_at DESC, id DESC
+            OFFSET @Offset ROWS
+            FETCH NEXT @PageSize ROWS ONLY;
+
+            SELECT COUNT(*)
+            FROM products
+            {whereClause};
+            """;
 
         CommandDefinition command = new(
             commandText: query,
-            parameters: new { Offset = (page - 1) * pageSize, PageSize = pageSize },
+            parameters: parameters,
             cancellationToken: cancellationToken
         );
 
         await using SqlMapper.GridReader multi = await connection.QueryMultipleAsync(command);
-        IEnumerable<GetProductResponse> items = multi.Read<GetProductResponse>();
-        int totalCount = multi.ReadSingle<int>();
-        int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+        IEnumerable<GetProductResponse> items = await multi.ReadAsync<GetProductResponse>();
+        int totalCount = await multi.ReadSingleAsync<int>();
+        int totalPages = (int)Math.Ceiling((double)totalCount / productsQuery.PageSize);
 
-        return new GetProductsResponse(items, page, pageSize, totalCount, totalPages);
+        return new GetProductsResponse(items, productsQuery.Page, productsQuery.PageSize, totalCount, totalPages);
     }
 }
