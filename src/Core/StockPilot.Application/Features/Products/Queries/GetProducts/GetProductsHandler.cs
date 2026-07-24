@@ -10,6 +10,6 @@ public class GetProductsHandler(
     public async Task<GetProductsResponse> HandleAsync(GetProductsQuery query, CancellationToken cancellationToken)
     {
         await validator.ValidateAndThrowAsync(query, cancellationToken);
-        return await productQueryRepository.GetAllAsync(query.Page, query.PageSize, cancellationToken);
+        return await productQueryRepository.GetAllAsync(query, cancellationToken);
     }
 }
