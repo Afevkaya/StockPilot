@@ -47,6 +47,16 @@ public class ProductQueryRepository(IDbConnectionFactory dbConnectionFactory) : 
 
         string whereClause = conditions.Count > 0 ? "WHERE " + string.Join(" AND ", conditions) : string.Empty;
 
+        string sortBy = productsQuery.SortBy switch
+        {
+            "name" => "name",
+            "purchase_price" => "purchase_price",
+            "sale_price" => "sale_price",
+            _ => "created_at"
+        };
+        string sortDirection = productsQuery.SortDirection?.ToLower() == "desc" ? "DESC" : "ASC";
+        string orderByClause = $" ORDER BY {sortBy} {sortDirection}, id DESC";
+
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
         string query = $"""
             SELECT
@@ -56,7 +66,7 @@ public class ProductQueryRepository(IDbConnectionFactory dbConnectionFactory) : 
                 sale_price AS SalePrice
             FROM products
             {whereClause}
-            ORDER BY created_at DESC, id DESC
+            {orderByClause}
             OFFSET @Offset ROWS
             FETCH NEXT @PageSize ROWS ONLY;
 

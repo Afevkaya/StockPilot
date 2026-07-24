@@ -30,5 +30,18 @@ public class GetProductsQueryValidator : AbstractValidator<GetProductsQuery>
                            query.MinSalePrice!.Value <= query.MaxSalePrice!.Value)
             .WithMessage("Minimum satış fiyatı maksimum satış fiyatından büyük olamaz.")
             .When(query => query.MinSalePrice is not null && query.MaxSalePrice is not null);
+
+        RuleFor(query => query.SortDirection)
+            .Must(direction => direction is null || direction.Equals("asc", StringComparison.OrdinalIgnoreCase) ||
+                               direction.Equals("desc", StringComparison.OrdinalIgnoreCase))
+            .WithMessage("Sıralama yönü 'asc' veya 'desc' olmalıdır.")
+            .When(query => !string.IsNullOrWhiteSpace(query.SortDirection));
+
+        RuleFor(query => query.SortBy)
+            .Must(sortBy =>
+                sortBy is null ||
+                new[] { "name", "saleprice", "purchaseprice", "createdat" }.Contains(sortBy.ToLower()))
+            .WithMessage("Sıralama alanı 'name', 'saleprice', 'purchaseprice' veya 'createdat' olmalıdır.")
+            .When(query => !string.IsNullOrWhiteSpace(query.SortBy));
     }
 }
