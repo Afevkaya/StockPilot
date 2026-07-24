@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using StockPilot.Application.Features.Products.Commands.CreateProduct;
+using StockPilot.Application.Features.Products.Commands.DeleteProduct;
 using StockPilot.Application.Features.Products.Commands.UpdateProduct;
 using StockPilot.Application.Features.Products.Queries.GetProductById;
 using StockPilot.Application.Features.Products.Queries.GetProducts;
@@ -13,10 +14,12 @@ public class ProductsController(
     CreateProductHandler createProductHandler,
     GetProductByIdHandler getProductByIdHandler,
     GetProductsHandler getProductsHandler,
-    UpdateProductHandler updateProductHandler) : ControllerBase
+    UpdateProductHandler updateProductHandler,
+    DeleteProductHandler deleteProductHandler) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromBody] CreateProductCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductCommand command,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -47,6 +50,7 @@ public class ProductsController(
         {
             return NotFound();
         }
+
         return Ok(product);
     }
 
@@ -80,5 +84,12 @@ public class ProductsController(
             return ValidationProblem(new ValidationProblemDetails(errors));
         }
 
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteProduct(Guid id, CancellationToken cancellationToken)
+    {
+        await deleteProductHandler.HandleAsync(new DeleteProductCommand(id), cancellationToken);
+        return Ok();
     }
 }

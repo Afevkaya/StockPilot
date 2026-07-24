@@ -25,7 +25,7 @@ public class ProductCommandRepository(IDbConnectionFactory dbConnectionFactory) 
         int affectedRows = await connection.ExecuteAsync(command);
         if (affectedRows < 1)
         {
-            throw new InvalidOperationException("Failed to insert Product into database.");
+            throw new InvalidOperationException("Ürün kayıt işlemi yapılırken bir hata gerçekleşti.");
         }
     }
 
@@ -50,7 +50,7 @@ public class ProductCommandRepository(IDbConnectionFactory dbConnectionFactory) 
         int affectedRows = await connection.ExecuteAsync(command);
         if (affectedRows < 1)
         {
-            throw new InvalidOperationException($"Failed to update Product with Id {product.Id} in database.");
+            throw new InvalidOperationException($"Ürün güncellenirken bir hata gerçekleşti.");
         }
     }
 
@@ -71,5 +71,25 @@ public class ProductCommandRepository(IDbConnectionFactory dbConnectionFactory) 
             cancellationToken: cancellationToken
         );
         return await connection.QuerySingleOrDefaultAsync<Product>(command);
+    }
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        using IDbConnection connection = dbConnectionFactory.CreateConnection();
+        const string query = @"
+            DELETE FROM Products
+            WHERE id = @Id;
+        ";
+        CommandDefinition command = new(
+            commandText: query,
+            parameters: new { Id = id },
+            cancellationToken: cancellationToken
+        );
+
+        int affectedRows = await connection.ExecuteAsync(command);
+        if (affectedRows < 1)
+        {
+            throw new InvalidOperationException($"Ürün silme işleminde bir hata gerçekleşti.");
+        }
     }
 }

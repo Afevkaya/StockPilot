@@ -24,7 +24,7 @@ public class ProductQueryRepository(IDbConnectionFactory dbConnectionFactory) : 
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
         CommandDefinition command = new(
-            commandText: "SELECT name as Name, purchase_price as PurchasePrice, sale_price as SalePrice FROM products ORDER BY created_at DESC",
+            commandText: "SELECT id as Id, name as Name, purchase_price as PurchasePrice, sale_price as SalePrice FROM products ORDER BY created_at DESC",
             cancellationToken: cancellationToken
         );
         return await connection.QueryAsync<GetProductsResponse>(command);
