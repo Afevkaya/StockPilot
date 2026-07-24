@@ -20,13 +20,29 @@ public class ProductQueryRepository(IDbConnectionFactory dbConnectionFactory) : 
         return await connection.QuerySingleOrDefaultAsync<GetProductByIdResponse>(command);
     }
 
-    public async Task<IEnumerable<GetProductsResponse>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<GetProductsResponse> GetAllAsync(int page = 1, int pageSize = 10,
+        CancellationToken cancellationToken = default)
     {
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
+        string query = @"SELECT
+                            id as Id, name as Name,
+                            purchase_price as PurchasePrice, sale_price as SalePrice
+                        FROM products
+                        ORDER BY created_date desc, id desc
+                        OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+                        SELECT COUNT(*) FROM products;";
+
         CommandDefinition command = new(
-            commandText: "SELECT id as Id, name as Name, purchase_price as PurchasePrice, sale_price as SalePrice FROM products ORDER BY created_at DESC",
+            commandText: query,
+            parameters: new { Offset = (page - 1) * pageSize, PageSize = pageSize },
             cancellationToken: cancellationToken
         );
-        return await connection.QueryAsync<GetProductsResponse>(command);
+
+        await using SqlMapper.GridReader multi = await connection.QueryMultipleAsync(command);
+        IEnumerable<GetProductResponse> items = multi.Read<GetProductResponse>();
+        int totalCount = multi.ReadSingle<int>();
+        int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+        return new GetProductsResponse(items, page, pageSize, totalCount, totalPages);
     }
 }
