@@ -5,5 +5,7 @@ public record GetProductsQuery(
     int PageSize = 10,
     string? Name = null,
     decimal? MinSalePrice = null,
-    decimal? MaxSalePrice = null);
+    decimal? MaxSalePrice = null,
+    string? SortBy = null,
+    string? SortDirection = "asc");
 
