@@ -7,10 +7,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\Core\StockPilot.Application\StockPilot.Application.csproj" />
       <ProjectReference Include="..\..\Infrastructure\StockPilot.Persistence\StockPilot.Persistence.csproj" />
     </ItemGroup>
