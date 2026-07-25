@@ -4,6 +4,11 @@ namespace StockPilot.Domain.Entities;
 
 public class Product : BaseEntity
 {
+    public string Name { get; private set; } = null!;
+    public string? Description { get; private set; }
+    public decimal PurchasePrice { get; private set; }
+    public decimal SalePrice { get; private set; }
+
     public Product()
     {
 
@@ -15,17 +20,12 @@ public class Product : BaseEntity
         ValidatePrices(purchasePrice, salePrice);
 
         Id = Guid.NewGuid();
-        Name = name;
-        Description = description;
+        Name = name.Trim();
+        Description = description?.Trim();
         PurchasePrice = purchasePrice;
         SalePrice = salePrice;
         CreatedAt = DateTime.UtcNow;
     }
-
-    public string Name { get; private set; } = null!;
-    public string? Description { get; private set; }
-    public decimal PurchasePrice { get; private set; }
-    public decimal SalePrice { get; private set; }
 
     public void Update(string name, string? description, decimal purchasePrice, decimal salePrice)
     {
