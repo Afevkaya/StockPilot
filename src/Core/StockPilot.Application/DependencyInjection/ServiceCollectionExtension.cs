@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using StockPilot.Application.Features.Categories.Commands.CreateCategory;
 using StockPilot.Application.Features.Products.Commands.CreateProduct;
 using StockPilot.Application.Features.Products.Commands.DeleteProduct;
 using StockPilot.Application.Features.Products.Commands.UpdateProduct;
@@ -18,6 +19,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<GetProductsHandler>();
         services.AddScoped<UpdateProductHandler>();
         services.AddScoped<DeleteProductHandler>();
+        services.AddScoped<CreateCategoryHandler>();
         services.AddValidatorsFromAssemblyContaining<CreateProductCommandValidator>();
         return services;
     }

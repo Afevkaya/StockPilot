@@ -22,6 +22,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IDbConnectionFactory>(_ => new DbConnectionFactory(connectionString));
         services.AddScoped<IProductCommandRepository, ProductCommandRepository>();
         services.AddScoped<IProductQueryRepository, ProductQueryRepository>();
+        services.AddScoped<ICategoryCommandRepository, CategoryCommandRepository>();
 
         return services;
     }
