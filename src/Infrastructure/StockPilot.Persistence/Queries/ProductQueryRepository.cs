@@ -23,60 +23,63 @@ public class ProductQueryRepository(IDbConnectionFactory dbConnectionFactory) : 
     public async Task<GetProductsResponse> GetAllAsync(GetProductsQuery productsQuery,
         CancellationToken cancellationToken = default)
     {
-        List<string> conditions = [];
-        DynamicParameters parameters = new();
-
-        parameters.Add("Offset", (productsQuery.Page - 1) * productsQuery.PageSize);
-        parameters.Add("PageSize", productsQuery.PageSize);
+        var builder = new SqlBuilder();
 
         if (!string.IsNullOrWhiteSpace(productsQuery.Name))
         {
-            conditions.Add("name = @Name");
-            parameters.Add("Name", productsQuery.Name.Trim());
+            builder.Where("name LIKE @Name", new { Name = productsQuery.Name.Trim() });
         }
+
         if (productsQuery.MinSalePrice is not null)
         {
-            conditions.Add("sale_price >= @MinSalePrice");
-            parameters.Add("MinSalePrice", productsQuery.MinSalePrice.Value);
+            builder.Where("sale_price >= @MinSalePrice", new { productsQuery.MinSalePrice });
         }
+
         if (productsQuery.MaxSalePrice is not null)
         {
-            conditions.Add("sale_price <= @MaxSalePrice");
-            parameters.Add("MaxSalePrice", productsQuery.MaxSalePrice.Value);
+            builder.Where("sale_price <= @MaxSalePrice", new { productsQuery.MaxSalePrice });
         }
 
-        string whereClause = conditions.Count > 0 ? "WHERE " + string.Join(" AND ", conditions) : string.Empty;
+        if (!string.IsNullOrWhiteSpace(productsQuery.Search))
+        {
+            builder.Where("(name ILIKE @Search OR description ILIKE @Search)", new { Search = $"%{productsQuery.Search.Trim()}%" });
+        }
 
-        string sortBy = productsQuery.SortBy switch
+        string sortBy = productsQuery.SortBy?.ToLower() switch
         {
             "name" => "name",
-            "purchase_price" => "purchase_price",
-            "sale_price" => "sale_price",
-            _ => "created_at"
+            "saleprice" => "sale_price",
+            "purchaseprice" => "purchase_price",
+            "createdat" => "created_at",
+            _ => "name"
         };
+
         string sortDirection = productsQuery.SortDirection?.ToLower() == "desc" ? "DESC" : "ASC";
-        string orderByClause = $" ORDER BY {sortBy} {sortDirection}, id DESC";
+        builder.OrderBy(sortBy, sortDirection);
+
+        SqlBuilder.Template template = builder.AddTemplate(@"
+        SELECT
+            id AS Id,
+            name AS Name,
+            purchase_price AS PurchasePrice,
+            sale_price AS SalePrice
+        FROM products
+        /**where**/
+        /**orderby**/
+        OFFSET @Offset ROWS
+        FETCH NEXT @PageSize ROWS ONLY;
+
+        SELECT COUNT(*)
+        FROM products
+        /**where**/;");
+
+        var parameters = new DynamicParameters(template.Parameters);
+        parameters.Add("Offset", (productsQuery.Page - 1) * productsQuery.PageSize);
+        parameters.Add("PageSize", productsQuery.PageSize);
 
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
-        string query = $"""
-            SELECT
-                id AS Id,
-                name AS Name,
-                purchase_price AS PurchasePrice,
-                sale_price AS SalePrice
-            FROM products
-            {whereClause}
-            {orderByClause}
-            OFFSET @Offset ROWS
-            FETCH NEXT @PageSize ROWS ONLY;
-
-            SELECT COUNT(*)
-            FROM products
-            {whereClause};
-            """;
-
-        CommandDefinition command = new(
-            commandText: query,
+        var command = new CommandDefinition(
+            commandText: template.RawSql,
             parameters: parameters,
             cancellationToken: cancellationToken
         );
