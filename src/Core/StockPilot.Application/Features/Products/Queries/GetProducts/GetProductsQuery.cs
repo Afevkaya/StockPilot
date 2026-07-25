@@ -7,5 +7,6 @@ public record GetProductsQuery(
     decimal? MinSalePrice = null,
     decimal? MaxSalePrice = null,
     string? SortBy = null,
-    string? SortDirection = "asc");
+    string? SortDirection = "asc",
+    string? Search = null);
 

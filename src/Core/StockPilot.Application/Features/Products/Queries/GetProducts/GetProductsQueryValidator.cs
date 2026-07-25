@@ -43,5 +43,10 @@ public class GetProductsQueryValidator : AbstractValidator<GetProductsQuery>
                 new[] { "name", "saleprice", "purchaseprice", "createdat" }.Contains(sortBy.ToLower()))
             .WithMessage("Sıralama alanı 'name', 'saleprice', 'purchaseprice' veya 'createdat' olmalıdır.")
             .When(query => !string.IsNullOrWhiteSpace(query.SortBy));
+
+        RuleFor(query => query.Search)
+            .MaximumLength(200)
+            .WithMessage("Arama terimi en fazla 200 karakter olmalıdır.")
+            .When(query => !string.IsNullOrWhiteSpace(query.Search));
     }
 }
