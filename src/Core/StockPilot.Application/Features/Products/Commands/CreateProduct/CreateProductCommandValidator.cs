@@ -15,5 +15,7 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
             .GreaterThanOrEqualTo(0).WithMessage("Alış fiyatı sıfırdan büyük veya eşit olmalıdır.");
         RuleFor(product => product.SalePrice)
             .GreaterThanOrEqualTo(0).WithMessage("Satış fiyatı sıfırdan büyük veya eşit olmalıdır.");
+        RuleFor(product => product.CategoryId)
+            .NotEmpty().WithMessage("Kategori ID zorunludur.");
     }
 }

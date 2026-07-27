@@ -4,5 +4,6 @@ public record CreateProductCommand(
     string Name,
     string? Description,
     decimal PurchasePrice,
-    decimal SalePrice
+    decimal SalePrice,
+    Guid CategoryId
 );

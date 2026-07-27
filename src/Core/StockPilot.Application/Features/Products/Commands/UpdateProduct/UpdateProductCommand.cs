@@ -8,4 +8,5 @@ public record UpdateProductCommand(
     string Name,
     string? Description,
     decimal PurchasePrice,
-    decimal SalePrice);
+    decimal SalePrice,
+    Guid CategoryId);
