@@ -11,9 +11,22 @@ public class ProductQueryRepository(IDbConnectionFactory dbConnectionFactory) : 
 {
     public async Task<GetProductByIdResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
+        string query = @"
+            SELECT
+                p.name AS Name,
+                p.description AS Description,
+                p.purchase_price AS PurchasePrice,
+                p.sale_price AS SalePrice,
+                p.category_id AS CategoryId,
+                c.name AS CategoryName
+            FROM products p
+            join categories c
+                on p.category_id = c.id
+            WHERE p.id = @Id;
+        ";
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
         CommandDefinition command = new(
-            commandText: "SELECT name as Name, description as Description, purchase_price as PurchasePrice, sale_price as SalePrice FROM products WHERE id = @Id",
+            commandText: query,
             parameters: new { Id = id },
             cancellationToken: cancellationToken
         );
@@ -27,30 +40,30 @@ public class ProductQueryRepository(IDbConnectionFactory dbConnectionFactory) : 
 
         if (!string.IsNullOrWhiteSpace(productsQuery.Name))
         {
-            builder.Where("name LIKE @Name", new { Name = productsQuery.Name.Trim() });
+            builder.Where("p.name LIKE @Name", new { Name = productsQuery.Name.Trim() });
         }
 
         if (productsQuery.MinSalePrice is not null)
         {
-            builder.Where("sale_price >= @MinSalePrice", new { productsQuery.MinSalePrice });
+            builder.Where("p.sale_price >= @MinSalePrice", new { productsQuery.MinSalePrice });
         }
 
         if (productsQuery.MaxSalePrice is not null)
         {
-            builder.Where("sale_price <= @MaxSalePrice", new { productsQuery.MaxSalePrice });
+            builder.Where("p.sale_price <= @MaxSalePrice", new { productsQuery.MaxSalePrice });
         }
 
         if (!string.IsNullOrWhiteSpace(productsQuery.Search))
         {
-            builder.Where("(name ILIKE @Search OR description ILIKE @Search)", new { Search = $"%{productsQuery.Search.Trim()}%" });
+            builder.Where("(p.name ILIKE @Search OR p.description ILIKE @Search)", new { Search = $"%{productsQuery.Search.Trim()}%" });
         }
 
         string sortBy = productsQuery.SortBy?.ToLower() switch
         {
-            "name" => "name",
-            "saleprice" => "sale_price",
-            "purchaseprice" => "purchase_price",
-            "createdat" => "created_at",
+            "name" => "p.name",
+            "saleprice" => "p.sale_price",
+            "purchaseprice" => "p.purchase_price",
+            "createdat" => "p.created_at",
             _ => "name"
         };
 
@@ -59,11 +72,15 @@ public class ProductQueryRepository(IDbConnectionFactory dbConnectionFactory) : 
 
         SqlBuilder.Template template = builder.AddTemplate(@"
         SELECT
-            id AS Id,
-            name AS Name,
-            purchase_price AS PurchasePrice,
-            sale_price AS SalePrice
-        FROM products
+            p.id AS Id,
+            p.name AS Name,
+            p.purchase_price AS PurchasePrice,
+            p.sale_price AS SalePrice,
+            p.category_id AS CategoryId,
+            c.name AS CategoryName
+        FROM products p
+        join categories c
+            on p.category_id = c.id
         /**where**/
         /**orderby**/
         OFFSET @Offset ROWS

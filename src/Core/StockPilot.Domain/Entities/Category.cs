@@ -6,6 +6,7 @@ public class Category : BaseEntity
 {
     public string Name { get; private set; } = null!;
     public string Description { get; private set; } = null!;
+    public IEnumerable<Product>? Products { get; set; }
 
     public Category()
     {

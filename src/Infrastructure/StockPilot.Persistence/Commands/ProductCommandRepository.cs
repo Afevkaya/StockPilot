@@ -13,8 +13,8 @@ public class ProductCommandRepository(IDbConnectionFactory dbConnectionFactory) 
 
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
         const string query = @"
-            INSERT INTO Products (id, name, description, purchase_price, sale_price, created_at)
-            VALUES (@Id, @Name, @Description, @PurchasePrice, @SalePrice, @CreatedAt);
+            INSERT INTO Products (id, name, description, purchase_price, sale_price, category_id, created_at)
+            VALUES (@Id, @Name, @Description, @PurchasePrice, @SalePrice, @CategoryId, @CreatedAt);
         ";
         CommandDefinition command = new(
             commandText: query,
@@ -38,6 +38,7 @@ public class ProductCommandRepository(IDbConnectionFactory dbConnectionFactory) 
                 description = @Description,
                 purchase_price = @PurchasePrice,
                 sale_price = @SalePrice,
+                category_id = @CategoryId,
                 updated_at = @UpdatedAt
             WHERE id = @Id;
         ";
@@ -61,6 +62,7 @@ public class ProductCommandRepository(IDbConnectionFactory dbConnectionFactory) 
             SELECT
                 id as Id, name as Name, description as Description,
                 purchase_price as PurchasePrice, sale_price as SalePrice,
+                category_id as CategoryId,
                 created_at as CreatedAt, updated_at as UpdatedAt
             FROM Products
             WHERE id = @Id;

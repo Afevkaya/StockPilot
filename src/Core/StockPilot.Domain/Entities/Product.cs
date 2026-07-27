@@ -8,13 +8,14 @@ public class Product : BaseEntity
     public string? Description { get; private set; }
     public decimal PurchasePrice { get; private set; }
     public decimal SalePrice { get; private set; }
+    public Guid CategoryId { get; set; }
 
     public Product()
     {
 
     }
 
-    public Product(string name, string? description, decimal purchasePrice, decimal salePrice)
+    public Product(string name, string? description, decimal purchasePrice, decimal salePrice, Guid categoryId)
     {
         ValidateName(name);
         ValidatePrices(purchasePrice, salePrice);
@@ -24,10 +25,11 @@ public class Product : BaseEntity
         Description = description?.Trim();
         PurchasePrice = purchasePrice;
         SalePrice = salePrice;
+        CategoryId = categoryId;
         CreatedAt = DateTime.UtcNow;
     }
 
-    public void Update(string name, string? description, decimal purchasePrice, decimal salePrice)
+    public void Update(string name, string? description, decimal purchasePrice, decimal salePrice, Guid categoryId)
     {
         ValidateName(name);
         ValidatePrices(purchasePrice, salePrice);
