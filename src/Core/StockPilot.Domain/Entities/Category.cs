@@ -23,6 +23,16 @@ public class Category : BaseEntity
         CreatedAt = DateTime.UtcNow;
     }
 
+    public void Update(string name, string description)
+    {
+        ValidateName(name);
+        ValidateDescription(description);
+
+        Name = name.Trim();
+        Description = description.Trim();
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     private static void ValidateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
