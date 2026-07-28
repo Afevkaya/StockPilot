@@ -5,6 +5,8 @@ using StockPilot.Application.Features.Categories.Commands.DeleteCategory;
 using StockPilot.Application.Features.Categories.Commands.UpdateCategory;
 using StockPilot.Application.Features.Categories.Queries.GetCategories;
 using StockPilot.Application.Features.Categories.Queries.GetCategory;
+using StockPilot.Application.Features.Inventories.Queries.GetAllInventories;
+using StockPilot.Application.Features.Inventories.Queries.GetProductInventory;
 using StockPilot.Application.Features.Products.Commands.CreateProduct;
 using StockPilot.Application.Features.Products.Commands.DeleteProduct;
 using StockPilot.Application.Features.Products.Commands.UpdateProduct;
@@ -30,6 +32,8 @@ public static class ServiceCollectionExtension
         services.AddScoped<UpdateCategoryHandler>();
         services.AddScoped<DeleteCategoryHandler>();
         services.AddScoped<CreateStockMovementHandler>();
+        services.AddScoped<GetProductInventoryHandler>();
+        services.AddScoped<GetAllInventoriesHandler>();
         services.AddValidatorsFromAssemblyContaining<CreateProductCommandValidator>();
         return services;
     }
