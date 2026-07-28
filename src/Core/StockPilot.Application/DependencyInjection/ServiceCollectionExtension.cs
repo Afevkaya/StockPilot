@@ -10,6 +10,7 @@ using StockPilot.Application.Features.Products.Commands.DeleteProduct;
 using StockPilot.Application.Features.Products.Commands.UpdateProduct;
 using StockPilot.Application.Features.Products.Queries.GetProductById;
 using StockPilot.Application.Features.Products.Queries.GetProducts;
+using StockPilot.Application.Features.StockMovements.Commands.CreateStockMovement;
 
 namespace StockPilot.Application.DependencyInjection;
 
@@ -28,6 +29,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<GetCategoryByIdHandler>();
         services.AddScoped<UpdateCategoryHandler>();
         services.AddScoped<DeleteCategoryHandler>();
+        services.AddScoped<CreateStockMovementHandler>();
         services.AddValidatorsFromAssemblyContaining<CreateProductCommandValidator>();
         return services;
     }
