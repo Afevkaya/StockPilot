@@ -6,7 +6,7 @@ using StockPilot.Domain.Entities;
 
 namespace StockPilot.Persistence.Commands;
 
-public class StockMovementCommandCommandRepository(IDbConnectionFactory dbConnectionFactory) : IStockMovementCommandRepository
+public class StockMovementCommandRepository(IDbConnectionFactory dbConnectionFactory) : IStockMovementCommandRepository
 {
     public async Task AddAsync(StockMovement stockMovement, CancellationToken cancellationToken = default)
     {
