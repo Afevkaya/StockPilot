@@ -14,13 +14,13 @@ public class CategoryQueryRepository(IDbConnectionFactory dbConnectionFactory) :
         var whereConditions = new List<string>();
         var parameters = new DynamicParameters();
 
-        if (!string.IsNullOrEmpty(query.Name))
+        if (!string.IsNullOrWhiteSpace(query.Name))
         {
             whereConditions.Add("Name ILIKE @Name");
             parameters.Add("Name", query.Name.Trim());
         }
 
-        if (!string.IsNullOrEmpty(query.Search))
+        if (!string.IsNullOrWhiteSpace(query.Search))
         {
             whereConditions.Add("(Name ILIKE @SearchTerm OR Description ILIKE @SearchTerm)");
             parameters.Add("SearchTerm", $"%{query.Search.Trim()}%");
