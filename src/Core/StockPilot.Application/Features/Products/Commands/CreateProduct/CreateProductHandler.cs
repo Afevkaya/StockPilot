@@ -9,7 +9,7 @@ public class CreateProductHandler(
     ICategoryCommandRepository categoryCommandRepository,
     IValidator<CreateProductCommand> validator)
 {
-    public async Task<CreateProductResponse> HandleAsync(
+    public async Task<CreateProductResponse> Handle(
         CreateProductCommand command,
         CancellationToken cancellationToken = default)
     {

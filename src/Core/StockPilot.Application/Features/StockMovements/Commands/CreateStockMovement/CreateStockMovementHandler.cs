@@ -9,7 +9,7 @@ public class CreateStockMovementHandler(
     IProductCommandRepository productCommandRepository,
     IValidator<CreateStockMovementCommand> validator)
 {
-    public async Task<CreateStockMovementResponse> HandleAsync(CreateStockMovementCommand command, CancellationToken cancellationToken)
+    public async Task<CreateStockMovementResponse> Handle(CreateStockMovementCommand command, CancellationToken cancellationToken)
     {
         await validator.ValidateAndThrowAsync(command, cancellationToken);
         Product? product = await productCommandRepository.GetByIdAsync(command.ProductId, cancellationToken);

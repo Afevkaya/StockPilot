@@ -22,7 +22,7 @@ public class CategoriesController(
     {
         try
         {
-            var response = await createCategoryHandler.HandleAsync(command, cancellationToken);
+            var response = await createCategoryHandler.Handle(command, cancellationToken);
             return Ok(response);
         }
         catch (ValidationException exception)

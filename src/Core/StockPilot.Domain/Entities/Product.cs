@@ -21,6 +21,7 @@ public class Product : BaseEntity
         ValidatePrices(purchasePrice, salePrice);
 
         Id = Guid.NewGuid();
+        CategoryId = categoryId;
         Name = name.Trim();
         Description = description?.Trim();
         PurchasePrice = purchasePrice;

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using StockPilot.Application.Features.ProductSuppliers.Queries.GetSupplierProducts;
 using StockPilot.Application.Features.Suppliers.Commands.CreateSupplier;
 using StockPilot.Application.Features.Suppliers.Commands.DeleteSupplier;
 using StockPilot.Application.Features.Suppliers.Commands.UpdateSupplier;
@@ -15,7 +16,8 @@ public class SuppliersController(
     GetAllSuppliersHandler getAllSuppliersHandler,
     GetSupplierByIdHandler getSupplierByIdHandler,
     UpdateSupplierHandler updateSupplierHandler,
-    DeleteSupplierHandler deleteSupplierHandler) : ControllerBase
+    DeleteSupplierHandler deleteSupplierHandler,
+    GetSupplierProductsHandler getSupplierProductsHandler) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> CreateSupplier([FromBody] CreateSupplierCommand command, CancellationToken cancellationToken = default)
@@ -89,5 +91,12 @@ public class SuppliersController(
     {
         await deleteSupplierHandler.Handle(new DeleteSupplierCommand(id), cancellationToken);
         return Ok();
+    }
+
+    [HttpGet("{SupplierId:guid}/products")]
+    public async Task<IActionResult> GetProducts([FromRoute] GetSupplierProductsQuery query,
+        CancellationToken cancellationToken = default)
+    {
+        return Ok(await getSupplierProductsHandler.Handle(query, cancellationToken));
     }
 }

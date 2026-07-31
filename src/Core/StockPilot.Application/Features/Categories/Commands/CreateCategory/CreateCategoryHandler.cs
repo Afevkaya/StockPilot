@@ -6,7 +6,7 @@ namespace StockPilot.Application.Features.Categories.Commands.CreateCategory;
 
 public class CreateCategoryHandler(ICategoryCommandRepository repository, IValidator<CreateCategoryCommand> validator)
 {
-    public async Task<CreateCategoryResponse> HandleAsync(CreateCategoryCommand command, CancellationToken cancellationToken = default)
+    public async Task<CreateCategoryResponse> Handle(CreateCategoryCommand command, CancellationToken cancellationToken = default)
     {
         await validator.ValidateAndThrowAsync(command, cancellationToken);
         Category category = new(command.Name, command.Description);
