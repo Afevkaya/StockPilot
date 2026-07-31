@@ -7,7 +7,7 @@ public class UpdateProductHandler(
     IProductCommandRepository productCommandRepository,
     ICategoryCommandRepository categoryCommandRepository)
 {
-    public async Task<UpdateProductResponse> HandleAsync(UpdateProductCommand command, CancellationToken cancellationToken)
+    public async Task<UpdateProductResponse> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
     {
         Product? product = await productCommandRepository.GetByIdAsync(command.Id, cancellationToken);
         if (product == null)

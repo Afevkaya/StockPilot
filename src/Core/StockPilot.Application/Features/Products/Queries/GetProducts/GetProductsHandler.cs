@@ -7,7 +7,7 @@ public class GetProductsHandler(
     IProductQueryRepository productQueryRepository,
     IValidator<GetProductsQuery> validator)
 {
-    public async Task<GetProductsResponse> HandleAsync(GetProductsQuery query, CancellationToken cancellationToken)
+    public async Task<GetProductsResponse> Handle(GetProductsQuery query, CancellationToken cancellationToken)
     {
         await validator.ValidateAndThrowAsync(query, cancellationToken);
         return await productQueryRepository.GetAllAsync(query, cancellationToken);

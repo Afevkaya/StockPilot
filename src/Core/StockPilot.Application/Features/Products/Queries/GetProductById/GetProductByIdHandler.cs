@@ -4,7 +4,7 @@ namespace StockPilot.Application.Features.Products.Queries.GetProductById;
 
 public class GetProductByIdHandler(IProductQueryRepository productQueryRepository)
 {
-    public async Task<GetProductByIdResponse?> HandleAsync(GetProductByIdQuery query, CancellationToken cancellationToken = default)
+    public async Task<GetProductByIdResponse?> Handle(GetProductByIdQuery query, CancellationToken cancellationToken = default)
     {
         var product = await productQueryRepository.GetByIdAsync(query.Id, cancellationToken);
         if (product is null)

@@ -13,7 +13,7 @@ public class StockMovementsController(CreateStockMovementHandler createStockMove
     {
         try
         {
-            return Ok(await createStockMovementHandler.HandleAsync(command, cancellationToken));
+            return Ok(await createStockMovementHandler.Handle(command, cancellationToken));
         }
         catch (ValidationException exception)
         {

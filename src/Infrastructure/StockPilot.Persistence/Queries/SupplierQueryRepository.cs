@@ -2,6 +2,7 @@
 using Dapper;
 using StockPilot.Application.Abstractions.Connections;
 using StockPilot.Application.Abstractions.Persistence.Queries;
+using StockPilot.Application.Features.ProductSuppliers.Queries.GetSupplierProducts;
 using StockPilot.Application.Features.Suppliers.Queries.GetAllSuppliers;
 using StockPilot.Application.Features.Suppliers.Queries.GetSupplierById;
 
@@ -94,5 +95,25 @@ public class SupplierQueryRepository(IDbConnectionFactory dbConnectionFactory) :
         CommandDefinition commandDefinition = new(sql, new { Id = query.Id }, cancellationToken: cancellationToken);
         using IDbConnection connection = dbConnectionFactory.CreateConnection();
         return await connection.QuerySingleOrDefaultAsync<GetSupplierByIdResponse>(commandDefinition);
+    }
+
+    public async Task<IEnumerable<GetSupplierProductsResponse>> GetSupplierProductsAsync(Guid supplierId,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = """
+                            select
+                                p.id as Id,
+                                p.name as ProductName,
+                                p.purchase_price as PurchasePrice,
+                                p.sale_price as SalePrice
+                            from products p
+                            join product_suppliers ps
+                                on p.id = ps.product_id
+                            where ps.supplier_id = @SupplierId
+                           """;
+
+        CommandDefinition command = new(sql, new { SupplierId = supplierId }, cancellationToken: cancellationToken);
+        using IDbConnection connection = dbConnectionFactory.CreateConnection();
+        return await connection.QueryAsync<GetSupplierProductsResponse>(command);
     }
 }

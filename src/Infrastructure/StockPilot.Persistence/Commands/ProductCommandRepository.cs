@@ -94,4 +94,50 @@ public class ProductCommandRepository(IDbConnectionFactory dbConnectionFactory) 
             throw new InvalidOperationException($"Ürün silme işleminde bir hata gerçekleşti.");
         }
     }
+
+    public async Task<bool> AssignSupplierAsync(
+        Guid productId,
+        Guid supplierId,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = """
+                           INSERT INTO product_suppliers (product_id, supplier_id)
+                           VALUES (@ProductId, @SupplierId)
+                           ON CONFLICT (product_id, supplier_id) DO NOTHING;
+                           """;
+
+        CommandDefinition command = new(
+            commandText: sql,
+            parameters: new
+            {
+                ProductId = productId,
+                SupplierId = supplierId
+            },
+            cancellationToken: cancellationToken);
+
+        using IDbConnection connection =
+            dbConnectionFactory.CreateConnection();
+
+        int affectedRows = await connection.ExecuteAsync(command);
+
+        return affectedRows == 1;
+    }
+
+    public async Task RemoveSupplierAsync(Guid productId, Guid supplierId, CancellationToken cancellationToken = default)
+    {
+        const string sql = """
+                            delete from product_suppliers
+                            where supplier_id = @SupplierId
+                            and product_id = @ProductId
+                         """;
+
+        CommandDefinition command = new(sql, new { ProductId = productId, SupplierId = supplierId },
+            cancellationToken: cancellationToken);
+        using IDbConnection connection = dbConnectionFactory.CreateConnection();
+        int affectedRows = await connection.ExecuteAsync(command);
+        if (affectedRows < 1)
+        {
+            throw new InvalidOperationException("Tedarikçi ürün silme işlemi yaparken hata oluştu.");
+        }
+    }
 }
