@@ -5,6 +5,7 @@ using StockPilot.Application.Abstractions.Persistence.Commands;
 using StockPilot.Application.Abstractions.Persistence.Queries;
 using StockPilot.Persistence.Commands;
 using StockPilot.Persistence.Connections;
+using StockPilot.Persistence.Migrations;
 using StockPilot.Persistence.Queries;
 
 namespace StockPilot.Persistence.DependencyInjection;
@@ -19,6 +20,7 @@ public static class ServiceCollectionExtension
             throw new InvalidOperationException("Connection string 'PostgreSQLConnection' not found.");
         }
 
+        services.AddSingleton(_ => new DatabaseMigrator(connectionString));
         services.AddScoped<IDbConnectionFactory>(_ => new DbConnectionFactory(connectionString));
         services.AddScoped<IProductCommandRepository, ProductCommandRepository>();
         services.AddScoped<IProductQueryRepository, ProductQueryRepository>();
@@ -28,6 +30,8 @@ public static class ServiceCollectionExtension
         services.AddScoped<IInventoryQueryRepository, InventoryQueryRepository>();
         services.AddScoped<ISupplierCommandRepository, SupplierCommandRepository>();
         services.AddScoped<ISupplierQueryRepository, SupplierQueryRepository>();
+        services.AddScoped<IPurchaseCommandRepository, PurchaseCommandRepository>();
+        services.AddScoped<IPurchaseQueryRepository, PurchaseQueryRepository>();
 
         return services;
     }
