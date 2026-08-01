@@ -1,5 +1,6 @@
 using StockPilot.Application.DependencyInjection;
 using StockPilot.Persistence.DependencyInjection;
+using StockPilot.Persistence.Migrations;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,8 @@ WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    DatabaseMigrator databaseMigrator = app.Services.GetRequiredService<DatabaseMigrator>();
+    databaseMigrator.Migrate();
     app.MapOpenApi();
     app.UseSwaggerUI(options =>
     {
