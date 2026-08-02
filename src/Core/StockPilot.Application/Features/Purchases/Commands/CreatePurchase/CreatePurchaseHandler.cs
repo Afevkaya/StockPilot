@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using StockPilot.Application.Abstractions.Persistence.Commands;
+using StockPilot.Domain.Entities;
 
 namespace StockPilot.Application.Features.Purchases.Commands.CreatePurchase;
 
@@ -30,7 +31,14 @@ public class CreatePurchaseHandler(
             command.Quantity,
             command.UnitPrice,
             command.PurchaseDate);
-        bool isAdded = await purchaseCommandRepository.AddAsync(purchase, cancellationToken);
+
+        var stockMovement = new StockMovement(
+            command.ProductId,
+            command.Quantity,
+            Domain.Enums.MovementType.StockIn);
+
+        bool isAdded =
+            await purchaseCommandRepository.AddWithStockMovementAsync(purchase, stockMovement, cancellationToken);
 
         if (!isAdded)
         {
