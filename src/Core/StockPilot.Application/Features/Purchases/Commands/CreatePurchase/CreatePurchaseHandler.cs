@@ -25,7 +25,7 @@ public class CreatePurchaseHandler(
             throw new KeyNotFoundException($"Tedarikçi bulunamadı. Id: {command.SupplierId}");
         }
 
-        var purchase = new Domain.Entities.Purchase(
+        var purchase = new Purchase(
             command.ProductId,
             command.SupplierId,
             command.Quantity,

@@ -19,6 +19,9 @@ using StockPilot.Application.Features.ProductSuppliers.Queries.GetSupplierProduc
 using StockPilot.Application.Features.Purchases.Commands.CreatePurchase;
 using StockPilot.Application.Features.Purchases.Queries.GetPurchaseById;
 using StockPilot.Application.Features.Purchases.Queries.GetPurchases;
+using StockPilot.Application.Features.Sales.Commands.CreateSale;
+using StockPilot.Application.Features.Sales.Queries.GetSaleById;
+using StockPilot.Application.Features.Sales.Queries.GetSales;
 using StockPilot.Application.Features.StockMovements.Commands.CreateStockMovement;
 using StockPilot.Application.Features.Suppliers.Commands.CreateSupplier;
 using StockPilot.Application.Features.Suppliers.Commands.DeleteSupplier;
@@ -58,6 +61,9 @@ public static class ServiceCollectionExtension
         services.AddScoped<CreatePurchaseHandler>();
         services.AddScoped<GetPurchasesHandler>();
         services.AddScoped<GetPurchaseByIdHandler>();
+        services.AddScoped<CreateSaleHandler>();
+        services.AddScoped<GetSalesHandler>();
+        services.AddScoped<GetSaleByIdHandler>();
         services.AddValidatorsFromAssemblyContaining<CreateProductCommandValidator>();
         return services;
     }
