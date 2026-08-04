@@ -3,5 +3,5 @@
 public enum MovementType
 {
     StockIn,
-    SockOut,
+    StockOut,
 }
